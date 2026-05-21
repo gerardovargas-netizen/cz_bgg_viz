@@ -1,0 +1,22 @@
+section div {
+    height: 100vh;
+}
+
+.hooverWord {
+    color: #f3f3f3;
+    cursor:help;
+    font-weight: bold;
+    border-bottom: 1px dotted #54321b;
+}
+
+.cajita {
+    position: absolute;
+    left: 0;
+    background-color: #000008;
+    color: aliceblue;
+    display: none;
+}
+
+.cajita.visible {
+    display: block;
+}
