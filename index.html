@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿De qué hablamos cuando jugamos?</title>
+  <style>
+    :root {
+      --color-pure-abstract: #B85C38;
+      --color-themed-abstract: #5F7D6E;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.5; }
+    #scrolly { display: flex; flex-direction: row; align-items: flex-start; }
+    #story { width: 50%; padding: 0 1rem 4rem; }
+    #story h1 { font-size: 1.5rem; margin: 1rem 0 0.5rem; }
+    #story h2 { font-size: 1.2rem; margin: 2rem 0 0.5rem; }
+    .step { min-height: 80vh; padding: 1rem 0; border-bottom: 1px solid #ddd; }
+    .step p { margin: 0; max-width: 40rem; }
+    #sticky-stage {
+      width: 50%;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #ccc;
+      background: #f5f5f5;
+    }
+    #graphic {
+      flex: 1;
+      padding: 1rem;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #graphic img { max-width: 100%; height: auto; }
+    #graphic .caption { margin-top: 0.75rem; font-size: 0.9rem; max-width: 28rem; }
+    #graphic .viz-caption { margin-top: 0.5rem; font-size: 0.85rem; color: #444; text-align: center; }
+    #graphic .loading { color: #666; }
+    #card-content {
+      width: 100%;
+      max-width: 28rem;
+      opacity: 0;
+      transition: opacity 0.45s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #card-content.is-visible { opacity: 1; }
+    .donut-chart {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .donut-chart svg { display: block; margin: 0 auto; }
+    .donut-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      justify-content: center;
+      margin-top: 1rem;
+      padding: 0;
+    }
+    .donut-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.5rem;
+      border: none;
+      background: transparent;
+      font: inherit;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .donut-legend-item:hover,
+    .donut-legend-item.is-active {
+      background: rgba(0, 0, 0, 0.06);
+    }
+    .donut-legend-swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .viz-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      border-top: 1px solid #ccc;
+      background: #eee;
+    }
+    .viz-controls button {
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+    }
+    .viz-controls .viz-indicator { font-size: 0.85rem; color: #333; }
+    .viz-placeholder svg { display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <main id="scrolly">
+    <article id="story">
+      <h1>¿De qué hablamos cuando jugamos?</h1>
+
+      <div class="step" data-media="img" data-img-key="Kanban 01">
+        <p>Los juegos dicen cosas sobre el mundo.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Agricola 01">
+        <p>A veces lo hacen de forma explícita y a veces sin darse cuenta.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Freedom 01">
+        <p><em>Freedom: The Underground Railroad</em> (Brian Mayer, 2013) se describe como un juego cooperativo donde los jugadores encarnan abolicionistas durante la Guerra Civil Norteamericana que tienen el objetivo de guiar personas esclavizadas hacia Canadá, empleando una red ferroviaria.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Freedom 02">
+        <p>El juego es claro sobre sus inclinaciones culturales y políticas y asume cierto nivel de adhesión ideológica de parte de sus jugadores: la esclavitud es inaceptable y los esfuerzos históricos por abolirla deben ser difundidos y celebrados.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="AceSpades 01">
+        <p><em>Ace of Spades</em> (Benjamín Amorín, 2025) es un juego de cartas que se ambienta en una versión de fantasía de una Arizona infernal. Pese a que desde su nombre es claro que hace guiños hacia la música (tanto el título como el nombre del villano principal, Lord Overkill, son referencias a la banda de rock Motörhead), sus ilustraciones apuntan a otra dirección: la segunda mitad del siglo XIX.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="AceSpades 02">
+        <p>Aunque se inclina hacia una temática reminiscente del "viejo oeste", no puede escapar a la presencia de la esclavitud. El 7 de agosto de 2025, un usuario del sitio Board Game Geek publicó en los foros del juego la fotografía de dos cartas que muestran un esclavista rico blandiendo un látigo y un esclavo negro (la carta le llama "fugitivo") encadenado y babeante. De inmediato, los usuarios mostraron su por el poco cuidado mostrado por la editorial española Devir a la hora de abordar el tema.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="IanBogost 01">
+        <p>Los juegos dicen cosas sobre el mundo. Y no solo lo dicen con sus historias y sus imágenes. Según Ian Bogost, los juegos dicen cosas con sus reglas. A esto, lo llama "retórica procedimental". En los videojuegos, las reglas son el código que. En los juegos de mesa, afortunadamente, podemos ver el "código fuente" en forma del reglamento.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="CV 01">
+        <p><em>CV</em> (Filip Miłuński, 2013) es un juego que simula las experiencias de vida de una persona, desde la infancia hasta la vejez. Los jugadores adquieren cartas a través de símbolos que obtienen de dados y de otras cartas. La carta "Hijo" puede ayudarnos a revelar las intenciones retóricas del juego: se requieren relaciones sociales y dinero para tener un hijo, y tenerlo otorga cada turno relaciones sociales y felicidad, pero cuesta dinero.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="CV 02">
+        <p>"Matrimonio" es una carta que requiere buena suerte y relaciones sociales, pero en lugar de otorgar beneficios fijos, permite tirar un dado adicional cada turno: una pareja, según el juego, nos abre al mundo y amplía nuestros horizontes en direcciones insospechadas; las consecuencias no siempre serán positivas, pero la vida en pareja permite hacer más.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="CV 03">
+        <p>El modo en que CV representa las relaciones de pareja (como oportunidades flexibles) es retórica procedimental en el sentido de Bogost: dice algo sobre el mundo a través de sus reglas.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Santa Maria 01">
+        <p>Un ejemplo en el que la retórica visual y la procedimental se alinean de forma problemática es Santa Maria (Kristian Amundsen Østby, Eilif Svensson, 2017). En este juego, el objetivo es hacer prosperar una colonia en el Nuevo Mundo. La comunidad de jugadores se lanzó a discutir el problema de tener un juego que parece recompensar el extractivismo, invisibilizar la esclavitud (les llama "trabajadores inmigrantes") y aligerar a través de su diseño gráfico la violencia de los procesos coloniales.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Azul 01">
+        <p>Los juegos dicen cosas, pero no siempre es así. A veces, solo parece que dicen cosas.</p>
+      </div>
+
+      <h2>Los juegos de mesa representan cultura</h2>
+
+      <div class="step" data-media="img" data-img-key="Hegemony 01">
+        <p>Para los estudios de la cultura, el problema de la representación es fundamental, complejo y prácticamente inagotable (tanto que exige su propio campo: los estudios de la representación). Representar puede entenderse a veces como un modo de re-presentar, de presentar otra vez algo que ya estaba presente, incluso como una estrategia para "presentar en lugar de". Entender las políticas de representación (es decir, qué formas de intercambio de poder intervienen en su construcción) de una obra es ahondar en los discursos ocultos que dicha obra promueve.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Heat 01">
+        <p>Para el estudio de los juegos, el problema de la representación está atravesado además por un eje crucial y altamente debatido: el de la simulación/abstracción. Un juego es una simulación cuando alinea sus reglas con un modelo más o menos fiel de la realidad extratextual; al contrario, un juego es abstracto cuando no se hace ninguna promesa sobre la relación (en términos de reglas y ludemas) entre el juego y el mundo.</p>
+      </div>
+      <div class="step" data-media="viz" data-viz-keys="Donut: AbstractNonAbstract,Histogram: TimeSeriesAbstractNonAbstract">
+        <p>¿Cuántos juegos de mesa son abstractos?</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Chess 01">
+        <p>Lo abstracto lúdico no siempre es obvio a simple vista. Incluso si se le incluye como parte de la historia de los juegos de guerra (que suelen ser altamente simulacionistas), el ajedrez (y su precursor indio, el chaturanga) es un juego abstracto: caballos, torres y reinas son nombres que se dan a piezas que se definen más por sus reglas de movimiento e interacción que por su relación con una realidad extratextual.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Yinsh 01">
+        <p>También puede ocurrir que la abstracción sea total y el juego se desarrolle en un universo de formas, colores y geometrías.</p>
+      </div>
+      <div class="step" data-media="viz" data-viz-keys="Donut: ThemedAbstractPureAbstract,Histogram: TimeSeriesThemedAbstractPureAbstract">
+        <p>¿Cuántos juegos de mesa abstractos tienen un "tema" y cuántos son "puramente abstractos"?</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Planted 01">
+        <p>Incluso si asumimos que los juegos de mesa abstractos dicen algo sobre el mundo, su oposición al simulacionismo exige cambiar los términos de la discusión. Por eso, les llamamos "temáticos" si las reglas evocan algo del mundo, sin que necesariamente se reconozca una retórica respecto al mundo.</p>
+      </div>
+      <div class="step" data-media="img" data-img-key="Amritsar 01">
+        <p>Pese a esto, a veces los juegos de mesa los juegos sí dicen cosas y, como vimos, las cosas que dicen lastiman a otros. Pero los juegos no hablan por sí mismos y es necesario preguntarse: ¿quién habla a través de los juegos?</p>
+      </div>
+    </article>
+
+    <figure id="sticky-stage">
+      <div id="graphic">
+        <div id="card-content">
+          <p class="loading">Cargando datos…</p>
+        </div>
+      </div>
+    </figure>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
