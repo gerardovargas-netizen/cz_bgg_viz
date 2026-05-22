@@ -1,0 +1,60 @@
+# Image Reference Guide
+
+Use this document to know which images are used throughout the project and their captions.
+
+I'll list in bullets the key used within the InfoOutline document in {}, and in nested bullets both the image and the caption needed. You'll see links, but keep them as plain text. Respect the cursives.
+
+- {Img: Kanban 01}
+	- File: /img/Kanban_01.webp
+	- Caption: *Kanban EV*, Vital Lacerda, 2020. "Los trabajadores de la fábrica de vehículos eléctricos optimizan e innovan para destacar en la gran reunión de la junta directiva". (@newrev, https://boardgamegeek.com/image/5095231/kanban-ev)
+- {Img: Agricola 01}
+	- File: /img/Agricola_01.webp
+	- Caption: *Agricola*, Uwe Rosenberg, 2007. "Construye tu granja sembrando campos y criando ganado. ¡Pero no olvides comer!". (@nerdymove, https://boardgamegeek.com/image/1885236/agricola)
+- {Img: Freedom 01}
+	- File: /img/Freedom_01.webp
+	- Caption: *Freedom: The Underground Railroad*, Brian Mayer, 2013. "Únete a otros abolicionistas para emancipar a los esclavos y guiarlos hacia la libertad en Canadá". (@Puma85, https://boardgamegeek.com/image/5783098/freedom-the-underground-railroad)
+- {Img: Freedom 01}
+	- File: /img/Freedom_02.webp
+	- Caption: *Freedom: The Underground Railroad*, Brian Mayer, 2013. "Únete a otros abolicionistas para emancipar a los esclavos y guiarlos hacia la libertad en Canadá". (@Puma85, https://boardgamegeek.com/image/5783098/freedom-the-underground-railroad)
+- {Img: AceSpades 01}
+	- File: /img/AceSpades_01.webp
+	- Caption: *Ace of Spades*, Benjamín Amorín, 2025. "Canaliza tu magia a través de jugadas de póker para resolver duelos peligrosos". (@NasumQSU, https://boardgamegeek.com/image/9026993/ace-of-spades).
+- {Img: AceSpades 02}
+	- File: /img/AceSpades_02.webp
+	- Caption: *Ace of Spades*, Benjamín Amorín, 2025. "Canaliza tu magia a través de jugadas de póker para resolver duelos peligrosos". (@jambapg, https://boardgamegeek.com/image/9032399).
+- {Img: IanBogost 01}
+	- File: /img/IanBogost_01.avif
+	- Caption: Ian Bogost, Persuasive Games. The Expressive Power of Videogames, MIT Press, 2010. "Una exploración de la forma en que los videojuegos plantean argumentos y hacen declaraciones expresivas sobre el mundo, y que analiza su singular poder persuasivo en términos de sus propiedades computacionales"
+- {Img: CV 01}
+	- File: /img/CV_01.webp
+	- Caption: *CV*, Filip Miłuński, 2013. "Construye una vida mejor a medida que adquieres conocimientos, una carrera profesional e incluso encuentras la felicidad social". (@szafa, https://boardgamegeek.com/image/1695059/cv)
+- {Img: CV 02}
+	- File: /img/CV_02.webp
+	- Caption: *CV*, Filip Miłuński, 2013. "Construye una vida mejor a medida que adquieres conocimientos, una carrera profesional e incluso encuentras la felicidad social". (@Benterdimensional, https://boardgamegeek.com/image/5404873/cv)
+- {Img: CV 03}
+	- File: /img/CV_03.webp
+	- Caption: *CV*, Filip Miłuński, 2013. "Construye una vida mejor a medida que adquieres conocimientos, una carrera profesional e incluso encuentras la felicidad social". (@p0w3rserj, https://boardgamegeek.com/image/3598537/cv)
+- {Img: Santa Maria 01}
+	- File: /img/SantaMaria_01.webp
+	- Caption: *Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, 2017. "Construye y maximiza tu colonia de poliominós en el Nuevo Mundo". (@sverbeure, https://boardgamegeek.com/image/3919584/santa-maria)
+- {Img: Azul 01}
+	- File: /img/Azul_01.webp
+	- Caption: *Azul*, Michael Kiesling, 2017. "Embellece artísticamente las paredes de tu palacio obteniendo los azulejos más hermosos". (@EchoOperative, https://boardgamegeek.com/image/3720018/azul)
+- {Img: Hegemony 01}
+	- File: /img/Hegemony_01.webp
+	- Caption: *Hegemony: Lead Your Class to Victory*, Vangelis Bagiartakis y Varnavas Timotheou, 2023. "Simula una nación contemporánea completa en este eurojuego asimétrico de corte político-económico". (@Tabletopping_Games, https://boardgamegeek.com/image/6499211/hegemony-lead-your-class-to-victory)
+- {Img: Heat 01}
+	- File: /img/Heat_01.webp
+	- Caption: *Heat: Pedal to the Metal*, Asger Aleksandrov Granerud y Daniel Skjold Pedersen, 2022. "Lleva tu coche al límite en busca de la victoria, pero no lo sobrecalientes". (@SlyMathMan, https://boardgamegeek.com/image/7600012/heat-pedal-to-the-metal)
+- {Img: Chess 01}
+	- File: /img/Chess_01.webp
+	- Caption: *Ajedrez*, c. s. 15. "Jaque mate a tu oponente en este atemporal abstracto". (@jack61, https://boardgamegeek.com/image/322244/chess)
+- {Img: Yinsh 01}
+	- File: /img/Yinsh_01.webp
+	- Caption: *YINSH*, Kris Burm, 2003. "Mueve los anillos sobre las piezas para darles la vuelta, creando filas de cinco de tu color". (@minordemon, https://boardgamegeek.com/image/32162/yinsh)
+- {Img: Planted 01}
+	- File: /img/Planted_01.webp
+	- Caption: *Planted*, Phil Walker-Harding, 2022. "Cuida tu propia colección de plantas de interior". (@huggynkiss, https://boardgamegeek.com/image/7535111/planted-a-game-of-nature-and-nurture)
+- {Img: Amritsar 01}
+	- File: /img/Planted_01.webp
+	- Caption: *Amritsar: The Golden Temple*, David Heras Pino, 2023. "El maharajá necesita tus habilidades con el mancala y tu elefante para reconstruir el templo". (@dramaplastika, https://boardgamegeek.com/image/7606954/amritsar-the-golden-temple)
