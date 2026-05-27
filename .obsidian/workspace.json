@@ -4,49 +4,49 @@
     "type": "split",
     "children": [
       {
-        "id": "d6e8b4f9b1ae78d3",
+        "id": "7b02f2cb01082561",
         "type": "tabs",
         "children": [
           {
-            "id": "242e3152758445d7",
+            "id": "46ae70ec0ad4e324",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Prueba123.md",
+                "file": "Layout.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Prueba123"
+              "title": "Layout"
             }
           },
           {
-            "id": "0e2de89b470b5212",
+            "id": "f7ac475c26ae022c",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "InfoOutline.md",
+                "file": "CoreRules.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "InfoOutline"
+              "title": "CoreRules"
             }
           },
           {
-            "id": "bc84551f5cb716df",
+            "id": "0245b55315b41a89",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "info/storySoFar.md",
+                "file": "VizRef.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "storySoFar"
+              "title": "VizRef"
             }
           }
         ],
@@ -212,38 +212,80 @@
       "bases:Create new base": false
     }
   },
-  "active": "0e2de89b470b5212",
+  "floating": {
+    "id": "1e44cfe1340355bb",
+    "type": "floating",
+    "children": [
+      {
+        "id": "2b6ea3c2693b506e",
+        "type": "window",
+        "children": [
+          {
+            "id": "ba44e1372031d43e",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "fa673114f586a4e7",
+                "type": "leaf",
+                "state": {
+                  "type": "markdown",
+                  "state": {
+                    "file": "InfoOutline.md",
+                    "mode": "source",
+                    "source": false
+                  },
+                  "icon": "lucide-file",
+                  "title": "InfoOutline"
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical",
+        "x": -1253,
+        "y": 57,
+        "width": 1088,
+        "height": 814,
+        "maximize": false,
+        "zoom": 0
+      }
+    ]
+  },
+  "active": "f7ac475c26ae022c",
   "lastOpenFiles": [
-    "img/AceSpades_02.webp",
-    "js/main.js",
-    "js",
-    "index.html",
-    "VizRef.md",
-    "img/ImgRef.md",
-    "ImgRef.md",
+    "Layout.md",
     "InfoOutline.md",
-    "viz/VizRef.md",
+    "CoreRules.md",
+    "bak/boardgames_ranks.csv",
+    "bak/BGG_FullExtras_Final_V2.csv",
+    "bak/BGG_FullExtras_Final_V1.csv",
+    "bak/bgg_full_metadata.csv",
+    "bak/bgg_full_metadata_ranks.csv",
+    "bak/BGG_extra_17.csv",
+    "bak/BGG_extra_16.csv",
+    "bak/BGG_extra_15.csv",
+    "bak/BGG_extra_14.csv",
+    "bak/BGG_extra_13_final.csv",
+    "ImgRef.md",
+    "reference_images/viz_visual_reference.png",
+    "VizRef.md",
+    "README.md",
+    "GraphicDesign.md",
+    "img/Amritsar_02.webp",
+    "img/Amritsar_03.webp",
+    "img/JohnCompany_01.webp",
+    "img/SpiritIsland_01.webp",
+    "img/GuerrillaGeneration_01.webp",
+    "img/GuerrillaGeneration.webp",
+    "img/BritishWay_02.webp",
+    "img/BritishWay_01.webp",
+    "img/CubaLibre_01.webp",
     "info/storySoFar.md",
-    "img/Amritsar_01.webp",
+    "img/ImgRef.md",
+    "viz/VizRef.md",
     "bak/InfoOutline.md",
     "bak/VizRef.md",
     "bak/ImgRef.md",
-    "bak",
-    "untitled folder",
-    "img/Planted_01.webp",
-    "img/Unconfirmed 571220.crdownload",
-    "img/Agricola_01.webp",
-    "img/Yinsh_01.webp",
-    "img/Yinsh.webp",
-    "img/Chess_01.webp",
-    "img/Heat_01.webp",
-    "img/Hegemony_01.webp",
-    "img/Azul_01.webp",
-    "img/SantaMaria_01.webp",
-    "img/Unconfirmed 568759.crdownload",
-    "img/Unconfirmed 944785.crdownload",
-    "viz",
-    "img",
     "Prueba123.md",
     "info/bgg_viz/Welcome.md"
   ]
