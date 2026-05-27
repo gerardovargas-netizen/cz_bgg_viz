@@ -111,6 +111,152 @@ function isValidCountryCode(code) {
   return c.length > 0 && c !== "XXX";
 }
 
+// Para mapas: en GitHub Pages conviene cargar recursos por URL absoluta.
+// Usamos un GeoJSON donde cada país tiene ISO_A3 (ISO-3) para casar con nuestro dataset.
+const WORLD_GEOJSON_URL = "https://cdn.jsdelivr.net/gh/datasets/geo-countries@master/data/countries.geojson";
+const WORLD_MAP_KEY = "worldIso3";
+let worldMapReady = null;
+
+function ensureWorldMapRegistered() {
+  if (worldMapReady) return worldMapReady;
+
+  worldMapReady = fetch(WORLD_GEOJSON_URL)
+    .then((r) => {
+      if (!r.ok) throw new Error(`No pude cargar el mapa mundial (${r.status})`);
+      return r.json();
+    })
+    .then((geojson) => {
+      // ECharts empareja por “name”. Ajustamos para que “name” sea ISO-3.
+      (geojson.features || []).forEach((f) => {
+        const iso3 = f?.properties?.ISO_A3 || f?.properties?.ISO3 || f?.properties?.iso_a3;
+        if (iso3) {
+          f.properties = f.properties || {};
+          f.properties.name = iso3;
+        }
+      });
+      echarts.registerMap(WORLD_MAP_KEY, geojson);
+      return true;
+    })
+    .catch((err) => {
+      console.error(err);
+      return false;
+    });
+
+  return worldMapReady;
+}
+
+function parseNum(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function asISO3(value) {
+  const c = (value || "").trim();
+  return isValidCountryCode(c) ? c : null;
+}
+
+function listFromField(value) {
+  return String(value || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function countByISO3(rows, fieldName) {
+  const counts = new Map();
+  rows.forEach((r) => {
+    const code = asISO3(r[fieldName]);
+    if (!code) return;
+    counts.set(code, (counts.get(code) || 0) + 1);
+  });
+  return [...counts.entries()].map(([name, value]) => ({ name, value }));
+}
+
+function computeYearSeries(rows, predicate) {
+  const byYear = new Map();
+  rows.forEach((r) => {
+    const y = toYear(r);
+    if (!y) return;
+    if (y < 1900 || y > 2035) return;
+    if (!predicate(r)) return;
+    byYear.set(y, (byYear.get(y) || 0) + 1);
+  });
+  const years = [...byYear.keys()].sort((a, b) => a - b);
+  return { years, values: years.map((y) => byYear.get(y) || 0) };
+}
+
+function computeTwoYearSeries(rows, predA, predB, minYear) {
+  const bucket = new Map();
+  rows.forEach((r) => {
+    const y = toYear(r);
+    if (!y) return;
+    if (minYear && y < minYear) return;
+    if (y < 1900 || y > 2035) return;
+    const cur = bucket.get(y) || { a: 0, b: 0 };
+    if (predA(r)) cur.a += 1;
+    if (predB(r)) cur.b += 1;
+    bucket.set(y, cur);
+  });
+  const years = [...bucket.keys()].sort((a, b) => a - b);
+  return {
+    years,
+    a: years.map((y) => (bucket.get(y)?.a || 0)),
+    b: years.map((y) => (bucket.get(y)?.b || 0)),
+  };
+}
+
+function computeCooccurrenceGraph(rows, fieldName, options = {}) {
+  const {
+    filterToken = null,
+    excludeToken = null,
+    maxNodes = 26,
+  } = options;
+
+  const nodeCounts = new Map();
+  const edgeCounts = new Map();
+
+  rows.forEach((r) => {
+    if (filterToken && !fieldHasToken(r.Categories, filterToken) && !fieldHasToken(r.Families, filterToken)) return;
+
+    const items = listFromField(r[fieldName]).map((x) => x.trim()).filter(Boolean);
+    const cleaned = excludeToken ? items.filter((x) => x.toLowerCase() !== excludeToken.toLowerCase()) : items;
+    const uniq = [...new Set(cleaned)];
+    uniq.forEach((a) => nodeCounts.set(a, (nodeCounts.get(a) || 0) + 1));
+
+    for (let i = 0; i < uniq.length; i += 1) {
+      for (let j = i + 1; j < uniq.length; j += 1) {
+        const a = uniq[i];
+        const b = uniq[j];
+        const k = a < b ? `${a}|||${b}` : `${b}|||${a}`;
+        edgeCounts.set(k, (edgeCounts.get(k) || 0) + 1);
+      }
+    }
+  });
+
+  const topNodes = [...nodeCounts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, maxNodes)
+    .map(([name, value]) => ({ name, value }));
+
+  const allowed = new Set(topNodes.map((n) => n.name));
+  const edges = [...edgeCounts.entries()]
+    .map(([k, value]) => {
+      const [source, target] = k.split("|||");
+      return { source, target, value };
+    })
+    .filter((e) => allowed.has(e.source) && allowed.has(e.target))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 80);
+
+  const nodes = topNodes.map((n) => ({
+    name: n.name,
+    value: n.value,
+    symbolSize: Math.max(8, Math.min(34, 6 + Math.sqrt(n.value))),
+  }));
+
+  return { nodes, edges };
+}
+
 // Esta función resume un viz en números fáciles de mostrar.
 // Todavía no “dibujamos” el gráfico real: solo probamos que el filtro funciona.
 function computeVizSummary(vizKey, data) {
@@ -546,22 +692,598 @@ function buildPlaceholderOption(summary) {
   };
 }
 
-// Esta función crea una “prueba visual” para un viz: un gráfico simple con ECharts.
-// La idea no es que sea el resultado final, sino confirmar que las cuentas y filtros son correctos.
-function showVizPlaceholder(vizKey) {
+function buildCaptionElement(vizKey) {
+  const cap = document.createElement("p");
+  cap.className = "caption";
+  const caption = VIZ_SPEC_INDEX[vizKey]?.caption || "";
+  cap.textContent = caption || "";
+  return cap;
+}
+
+function buildDonutOption(title, caption, seriesName, groups) {
+  return {
+    backgroundColor: "transparent",
+    title: {
+      text: title,
+      subtext: caption || "",
+      left: "center",
+      top: 6,
+      textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
+      subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
+    },
+    tooltip: { trigger: "item" },
+    legend: { bottom: 0, left: "center", textStyle: { color: "#333" } },
+    series: [
+      {
+        name: seriesName,
+        type: "pie",
+        radius: ["40%", "70%"],
+        center: ["50%", "52%"],
+        avoidLabelOverlap: true,
+        label: { color: "#222" },
+        labelLine: { lineStyle: { color: "rgba(0,0,0,0.25)" } },
+        data: groups,
+        itemStyle: { borderColor: "rgba(0,0,0,0.12)", borderWidth: 1 },
+      },
+    ],
+    animationDuration: 400,
+  };
+}
+
+function buildBarTimeOption(title, caption, years, series) {
+  return {
+    backgroundColor: "transparent",
+    title: {
+      text: title,
+      subtext: caption || "",
+      left: "center",
+      top: 6,
+      textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
+      subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
+    },
+    tooltip: { trigger: "axis" },
+    legend: { top: 56, left: "center", textStyle: { color: "#333" } },
+    grid: { left: 10, right: 10, top: 92, bottom: 16, containLabel: true },
+    xAxis: { type: "category", data: years, axisLabel: { color: "#444", interval: Math.ceil(years.length / 10) } },
+    yAxis: { type: "value", axisLabel: { color: "#444" }, splitLine: { lineStyle: { color: "rgba(0,0,0,0.08)" } } },
+    series,
+    dataZoom: years.length > 35 ? [{ type: "inside" }] : [],
+    animationDuration: 400,
+  };
+}
+
+function buildWorldChoroplethOption(title, caption, data, visualMax) {
+  const maxVal = visualMax || Math.max(1, ...data.map((d) => d.value || 0));
+  return {
+    backgroundColor: "transparent",
+    title: {
+      text: title,
+      subtext: caption || "",
+      left: "center",
+      top: 6,
+      textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
+      subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
+    },
+    tooltip: { trigger: "item", formatter: (p) => `${p.name}: ${p.value || 0}` },
+    visualMap: {
+      min: 0,
+      max: maxVal,
+      left: 10,
+      bottom: 10,
+      text: ["Más", "Menos"],
+      inRange: { color: ["#f6efe6", "#d19e2b", "#b84a39"] },
+      textStyle: { color: "#333" },
+      calculable: true,
+    },
+    series: [
+      {
+        type: "map",
+        map: WORLD_MAP_KEY,
+        roam: true,
+        nameProperty: "name",
+        emphasis: { label: { show: false } },
+        itemStyle: { borderColor: "rgba(0,0,0,0.18)", borderWidth: 0.6 },
+        data,
+      },
+    ],
+    animationDuration: 400,
+  };
+}
+
+function buildWorldNetworkOption(title, caption, links, originPoints, destPoints) {
+  return {
+    backgroundColor: "transparent",
+    title: {
+      text: title,
+      subtext: caption || "",
+      left: "center",
+      top: 6,
+      textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
+      subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
+    },
+    tooltip: { trigger: "item" },
+    geo: {
+      map: WORLD_MAP_KEY,
+      roam: true,
+      nameProperty: "name",
+      itemStyle: { areaColor: "#f6efe6", borderColor: "rgba(0,0,0,0.16)" },
+      emphasis: { itemStyle: { areaColor: "#efe3d2" } },
+    },
+    series: [
+      {
+        name: "Conexiones",
+        type: "lines",
+        coordinateSystem: "geo",
+        zlevel: 1,
+        effect: { show: false },
+        lineStyle: { width: 1, opacity: 0.35, color: "#3b6b88" },
+        data: links,
+      },
+      {
+        name: "Origen",
+        type: "scatter",
+        coordinateSystem: "geo",
+        symbolSize: (v) => Math.max(4, Math.min(16, 2 + Math.sqrt(v[2] || 1))),
+        itemStyle: { color: "#4a7a61" },
+        data: originPoints,
+      },
+      {
+        name: "Destino",
+        type: "scatter",
+        coordinateSystem: "geo",
+        symbolSize: (v) => Math.max(4, Math.min(16, 2 + Math.sqrt(v[2] || 1))),
+        itemStyle: { color: "#b84a39" },
+        data: destPoints,
+      },
+    ],
+    legend: { bottom: 0, left: "center", textStyle: { color: "#333" } },
+    animationDuration: 400,
+  };
+}
+
+function buildForceGraphOption(title, caption, nodes, edges) {
+  return {
+    backgroundColor: "transparent",
+    title: {
+      text: title,
+      subtext: caption || "",
+      left: "center",
+      top: 6,
+      textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
+      subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
+    },
+    tooltip: { trigger: "item" },
+    series: [
+      {
+        type: "graph",
+        layout: "force",
+        roam: true,
+        data: nodes,
+        links: edges.map((e) => ({ source: e.source, target: e.target, value: e.value })),
+        force: { repulsion: 110, edgeLength: [40, 120] },
+        label: { show: true, color: "#222", fontSize: 10, formatter: "{b}" },
+        lineStyle: { color: "rgba(0,0,0,0.15)", width: 1 },
+        emphasis: { focus: "adjacency" },
+      },
+    ],
+    animationDuration: 400,
+  };
+}
+
+function computeVizOption(vizKey, data) {
+  const caption = VIZ_SPEC_INDEX[vizKey]?.caption || "";
+
+  // Ignorado por ahora: no existe en VizRef.md.
+  if (vizKey === "Stellar: AbstractThemes") return null;
+
+  if (vizKey === "Donut: AbstractNonAbstract") {
+    const abstract = data.filter((r) => fieldHasToken(r.Categories, "Abstract Strategy")).length;
+    const groups = [
+      { name: "Juegos abstractos", value: abstract },
+      { name: "Juegos no abstractos", value: data.length - abstract },
+    ];
+    return { height: 340, option: buildDonutOption(vizKey, caption, "Abstractos", groups) };
+  }
+
+  if (vizKey === "Donut: ThemedAbstractPureAbstract") {
+    const abstractOnly = data.filter((r) => fieldHasToken(r.Categories, "Abstract Strategy"));
+    const themed = abstractOnly.filter((r) => fieldHasToken(r.Families, "Theme:")).length;
+    const groups = [
+      { name: "Abstractos con tema", value: themed },
+      { name: "Abstractos puros", value: abstractOnly.length - themed },
+    ];
+    return { height: 340, option: buildDonutOption(vizKey, caption, "Temas", groups) };
+  }
+
+  if (vizKey === "Donut: IndochinaBDPhu") {
+    const filtered = data.filter((r) => fieldHasToken(r.War, "First Indochina War"));
+    const yes = filtered.filter((r) => fieldHasToken(r["Game Name"], "Dien Bien Phu") || fieldHasToken(r["Game Name"], "Bien Dien Phu")).length;
+    const groups = [
+      { name: "Aparece en el título", value: yes },
+      { name: "No aparece en el título", value: filtered.length - yes },
+    ];
+    return { height: 340, option: buildDonutOption(vizKey, caption, "Título", groups) };
+  }
+
+  if (vizKey === "Donut: ColonialIntersectPolitical") {
+    const filtered = data.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"));
+    const political = filtered.filter((r) => fieldHasToken(r.Categories, "Political")).length;
+    const groups = [
+      { name: "Colonial + Political", value: political },
+      { name: "Colonial sin Political", value: filtered.length - political },
+    ];
+    return { height: 340, option: buildDonutOption(vizKey, caption, "Intersección", groups) };
+  }
+
+  if (vizKey === "Histogram: TimeSeriesAbstractNonAbstract") {
+    const filtered = data.filter((r) => (toYear(r) ?? 0) >= 1990);
+    const s = computeTwoYearSeries(
+      filtered,
+      (r) => fieldHasToken(r.Categories, "Abstract Strategy"),
+      (r) => !fieldHasToken(r.Categories, "Abstract Strategy"),
+      1990
+    );
+    const option = buildBarTimeOption(vizKey, caption, s.years, [
+      { name: "Abstractos", type: "bar", data: s.a, itemStyle: { color: "#4a7a61" } },
+      { name: "No abstractos", type: "bar", data: s.b, itemStyle: { color: "#3b6b88" } },
+    ]);
+    return { height: 360, option };
+  }
+
+  if (vizKey === "Histogram: TimeSeriesThemedAbstractPureAbstract") {
+    const filtered = data.filter((r) => (toYear(r) ?? 0) >= 1990 && fieldHasToken(r.Categories, "Abstract Strategy"));
+    const s = computeTwoYearSeries(
+      filtered,
+      (r) => fieldHasToken(r.Families, "Theme:"),
+      (r) => !fieldHasToken(r.Families, "Theme:"),
+      1990
+    );
+    const option = buildBarTimeOption(vizKey, caption, s.years, [
+      { name: "Con tema", type: "bar", data: s.a, itemStyle: { color: "#d19e2b" } },
+      { name: "Puros", type: "bar", data: s.b, itemStyle: { color: "#7a4b75" } },
+    ]);
+    return { height: 360, option };
+  }
+
+  if (vizKey === "HorBar: MostCommonWars") {
+    const counts = new Map();
+    data.forEach((r) => {
+      listFromField(r.War).forEach((w) => counts.set(w, (counts.get(w) || 0) + 1));
+    });
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40);
+    const names = top.map((x) => x[0]);
+    const values = top.map((x) => x[1]);
+    const option = {
+      backgroundColor: "transparent",
+      title: { text: vizKey, subtext: caption, left: "center", top: 6, textStyle: { fontSize: 12, fontWeight: 700 }, subtextStyle: { fontSize: 11, color: "#444" } },
+      tooltip: { trigger: "axis" },
+      grid: { left: 10, right: 10, top: 84, bottom: 22, containLabel: true },
+      xAxis: { type: "value", axisLabel: { color: "#444" }, splitLine: { lineStyle: { color: "rgba(0,0,0,0.08)" } } },
+      yAxis: { type: "category", data: names, axisLabel: { color: "#444", width: 220, overflow: "truncate" } },
+      dataZoom: [{ type: "inside" }, { type: "slider", yAxisIndex: 0, right: 2, width: 10 }],
+      series: [{ type: "bar", data: values, itemStyle: { color: "#3b6b88" }, label: { show: true, position: "right", color: "#222" } }],
+      animationDuration: 400,
+    };
+    return { height: 420, option };
+  }
+
+  if (vizKey === "TimeSeries: TimeSeriesIndochinaVietnam / 2012 Embers of War") {
+    const filtered = data.filter((r) => (toYear(r) ?? 0) > 1990);
+    const s = computeTwoYearSeries(
+      filtered,
+      (r) => fieldHasToken(r.War, "Vietnam War"),
+      (r) => fieldHasToken(r.War, "First Indochina War"),
+      1990
+    );
+    const option = {
+      backgroundColor: "transparent",
+      title: { text: vizKey, subtext: caption, left: "center", top: 6, textStyle: { fontSize: 12, fontWeight: 700 }, subtextStyle: { fontSize: 11, color: "#444" } },
+      tooltip: { trigger: "axis" },
+      legend: { top: 56, left: "center", textStyle: { color: "#333" } },
+      grid: { left: 10, right: 10, top: 92, bottom: 16, containLabel: true },
+      xAxis: { type: "category", data: s.years, axisLabel: { color: "#444", interval: Math.ceil(s.years.length / 10) } },
+      yAxis: { type: "value", axisLabel: { color: "#444" }, splitLine: { lineStyle: { color: "rgba(0,0,0,0.08)" } } },
+      series: [
+        {
+          name: "Guerra de Vietnam",
+          type: "line",
+          data: s.a,
+          smooth: true,
+          symbolSize: 3,
+          lineStyle: { color: "#3b6b88" },
+          itemStyle: { color: "#3b6b88" },
+          markLine: { silent: true, data: [{ xAxis: 2012, label: { formatter: "2012: Embers of War" } }] },
+        },
+        { name: "Guerra de Indochina", type: "line", data: s.b, smooth: true, symbolSize: 3, lineStyle: { color: "#b84a39" }, itemStyle: { color: "#b84a39" } },
+      ],
+      animationDuration: 400,
+    };
+    return { height: 360, option };
+  }
+
+  if (vizKey === "TimeStackedArea: WargamesPoliticalTime") {
+    const filtered = data.filter((r) => (toYear(r) ?? 0) > 1990);
+    const s = computeTwoYearSeries(
+      filtered,
+      (r) => fieldHasToken(r.Categories, "Wargame"),
+      (r) => fieldHasToken(r.Categories, "Wargame") && fieldHasToken(r.Categories, "Political"),
+      1990
+    );
+    const option = {
+      backgroundColor: "transparent",
+      title: { text: vizKey, subtext: caption, left: "center", top: 6, textStyle: { fontSize: 12, fontWeight: 700 }, subtextStyle: { fontSize: 11, color: "#444" } },
+      tooltip: { trigger: "axis" },
+      legend: { top: 56, left: "center", textStyle: { color: "#333" } },
+      grid: { left: 10, right: 10, top: 92, bottom: 16, containLabel: true },
+      xAxis: { type: "category", data: s.years, axisLabel: { color: "#444", interval: Math.ceil(s.years.length / 10) } },
+      yAxis: { type: "value", axisLabel: { color: "#444" }, splitLine: { lineStyle: { color: "rgba(0,0,0,0.08)" } } },
+      series: [
+        { name: "Wargames", type: "line", stack: "total", areaStyle: {}, smooth: true, data: s.a, lineStyle: { color: "#3b6b88" }, itemStyle: { color: "#3b6b88" }, symbolSize: 2 },
+        { name: "Wargames políticos", type: "line", stack: "total", areaStyle: {}, smooth: true, data: s.b, lineStyle: { color: "#b84a39" }, itemStyle: { color: "#b84a39" }, symbolSize: 2 },
+      ],
+      animationDuration: 400,
+    };
+    return { height: 360, option };
+  }
+
+  if (vizKey === "TimeSeriesArea: TimeSeriesFarmingVsNonFarming") {
+    const filtered = data.filter((r) => (toYear(r) ?? 0) > 1990);
+    const s = computeTwoYearSeries(
+      filtered,
+      () => true,
+      (r) => fieldHasToken(r.Categories, "Farming"),
+      1990
+    );
+    const option = {
+      backgroundColor: "transparent",
+      title: { text: vizKey, subtext: caption, left: "center", top: 6, textStyle: { fontSize: 12, fontWeight: 700 }, subtextStyle: { fontSize: 11, color: "#444" } },
+      tooltip: { trigger: "axis" },
+      legend: { top: 56, left: "center", textStyle: { color: "#333" } },
+      grid: { left: 10, right: 10, top: 92, bottom: 16, containLabel: true },
+      xAxis: { type: "category", data: s.years, axisLabel: { color: "#444", interval: Math.ceil(s.years.length / 10) } },
+      yAxis: { type: "value", axisLabel: { color: "#444" }, splitLine: { lineStyle: { color: "rgba(0,0,0,0.08)" } } },
+      series: [
+        { name: "Todos", type: "line", smooth: true, areaStyle: { opacity: 0.15 }, data: s.a, lineStyle: { color: "#3b6b88" }, itemStyle: { color: "#3b6b88" }, symbolSize: 2 },
+        { name: "Farming", type: "line", smooth: true, areaStyle: { opacity: 0.18 }, data: s.b, lineStyle: { color: "#4a7a61" }, itemStyle: { color: "#4a7a61" }, symbolSize: 2 },
+      ],
+      animationDuration: 400,
+    };
+    return { height: 360, option };
+  }
+
+  if (vizKey === "TimeSeries: ThemeEnvironmentalProtection") {
+    const filtered = data.filter((r) => (toYear(r) ?? 0) > 1990 && fieldHasToken(r.Families, "Theme: Environmental Protection / Degradation / Pollution"));
+    const s = computeYearSeries(filtered, () => true);
+    const option = buildBarTimeOption(vizKey, caption, s.years, [
+      { name: "Juegos", type: "bar", data: s.values, itemStyle: { color: "#4a7a61" } },
+    ]);
+    return { height: 360, option };
+  }
+
+  if (vizKey === "NetworkGraph: MechanicsFilterColonial") {
+    const filtered = data.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"));
+    const g = computeCooccurrenceGraph(filtered, "Mechanics", { maxNodes: 26 });
+    return { height: 420, option: buildForceGraphOption(vizKey, caption, g.nodes, g.edges) };
+  }
+
+  if (vizKey === "NetworkGraph: FilterEducationalMechanicsCoocurrence") {
+    const filtered = data.filter((r) => fieldHasToken(r.Categories, "Educational"));
+    const g = computeCooccurrenceGraph(filtered, "Mechanics", { maxNodes: 26 });
+    return { height: 420, option: buildForceGraphOption(vizKey, caption, g.nodes, g.edges) };
+  }
+
+  if (vizKey === "NetworkGraph: FilterEducationalCategoriesCoocurrence") {
+    const filtered = data.filter((r) => fieldHasToken(r.Categories, "Educational"));
+    const g = computeCooccurrenceGraph(filtered, "Categories", { excludeToken: "Educational", maxNodes: 26 });
+    return { height: 420, option: buildForceGraphOption(vizKey, caption, g.nodes, g.edges) };
+  }
+
+  if (vizKey === "WorldMapGraph: OriginDestinyNetwork" || vizKey === "WorldMapGraph: OriginDestinyNetworkFilterColonial") {
+    const filtered = vizKey === "WorldMapGraph: OriginDestinyNetworkFilterColonial"
+      ? data.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"))
+      : data;
+
+    const links = [];
+    const originAgg = new Map();
+    const destAgg = new Map();
+
+    filtered.forEach((r) => {
+      const o = asISO3(r.PubOriginCountry);
+      const d = asISO3(r.ReprDestCountry);
+      if (!o || !d) return;
+
+      const olon = parseNum(r.PubOriginCoordLon);
+      const olat = parseNum(r.PubOriginCoordLat);
+      const dlon0 = parseNum(r.ReprDestCoordLon);
+      const dlat = parseNum(r.ReprDestCoordLat);
+      if (olon == null || olat == null || dlon0 == null || dlat == null) return;
+
+      const dlon = dlon0 + 3; // pequeño empuje a la derecha para evitar solapamiento
+      links.push({ coords: [[olon, olat], [dlon, dlat]] });
+
+      const ok = `${olon},${olat}`;
+      originAgg.set(ok, (originAgg.get(ok) || 0) + 1);
+      const dk = `${dlon},${dlat}`;
+      destAgg.set(dk, (destAgg.get(dk) || 0) + 1);
+    });
+
+    const originPoints = [...originAgg.entries()].map(([k, value]) => {
+      const [lon, lat] = k.split(",").map(Number);
+      return { name: "Origen", value: [lon, lat, value] };
+    });
+
+    const destPoints = [...destAgg.entries()].map(([k, value]) => {
+      const [lon, lat] = k.split(",").map(Number);
+      return { name: "Destino", value: [lon, lat, value] };
+    });
+
+    return { height: 420, needsWorldMap: true, option: buildWorldNetworkOption(vizKey, caption, links.slice(0, 900), originPoints, destPoints) };
+  }
+
+  if (vizKey.startsWith("Choropleth:")) {
+    let filtered = data;
+
+    if (vizKey === "Choropleth: CountryTargetWargame") {
+      filtered = data.filter((r) => fieldHasToken(r.Categories, "Wargame"));
+      const mapData = countByISO3(filtered, "ReprDestCountry");
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    if (vizKey === "Choropleth: CategoriesWargamePolitical") {
+      filtered = data.filter((r) => fieldHasToken(r.Categories, "Wargame") && fieldHasToken(r.Categories, "Political"));
+      const mapData = countByISO3(filtered, "ReprDestCountry");
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    if (vizKey === "Choropleth: OriginFranceDestinyAll") {
+      filtered = data.filter((r) => asISO3(r.PubOriginCountry) === "FRA" && fieldHasToken(r.Categories, "Wargame"));
+      const mapData = countByISO3(filtered, "ReprDestCountry");
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    if (vizKey === "Choropleth: OriginUSDestinyAll") {
+      filtered = data.filter((r) => asISO3(r.PubOriginCountry) === "USA" && fieldHasToken(r.Categories, "Wargame"));
+      const mapData = countByISO3(filtered, "ReprDestCountry");
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    if (vizKey === "Choropleth: OriginCountryIndochina") {
+      filtered = data.filter((r) => fieldHasToken(r.War, "First Indochina War"));
+      const mapData = countByISO3(filtered, "PubOriginCountry");
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    if (vizKey === "Choropleth: OriginCountryVietnam") {
+      filtered = data.filter((r) => fieldHasToken(r.War, "Vietnam War"));
+      const mapData = countByISO3(filtered, "PubOriginCountry");
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    if (vizKey === "Choropleth: Destiny: SliderAges") {
+      const order = ["Ancient", "Medieval", "Renaissance", "Pike and Shot", "Age of Reason", "Napoleonic", "Post-Napoleonic", "World War I", "World War II", "Korean War", "Vietnam War", "Modern Warfare"];
+      const options = order.map((age) => {
+        const rows = data.filter((r) => fieldHasToken(r.BGGHistoricCatAges, age));
+        const mapData = countByISO3(rows, "ReprDestCountry");
+        return buildWorldChoroplethOption(`${vizKey}`, `${caption}\nFiltro: ${age}`, mapData);
+      });
+      return {
+        height: 440,
+        needsWorldMap: true,
+        option: {
+          baseOption: {
+            timeline: { axisType: "category", autoPlay: false, data: order, bottom: 0, left: 10, right: 10, label: { color: "#333" } },
+          },
+          options,
+        },
+      };
+    }
+
+    if (vizKey === "Choropleth: Destiny: SliderDecades") {
+      const order = ["1920's", "1930's", "1940's", "1950's", "1960's", "1970's", "1980's", "1990's", "2000's"];
+      const options = order.map((dec) => {
+        const rows = data.filter((r) => fieldHasToken(r.BGG20thCentFamiliesDecades, dec));
+        const mapData = countByISO3(rows, "ReprDestCountry");
+        return buildWorldChoroplethOption(`${vizKey}`, `${caption}\nFiltro: ${dec}`, mapData);
+      });
+      return {
+        height: 440,
+        needsWorldMap: true,
+        option: {
+          baseOption: {
+            timeline: { axisType: "category", autoPlay: false, data: order, bottom: 0, left: 10, right: 10, label: { color: "#333" } },
+          },
+          options,
+        },
+      };
+    }
+
+    if (vizKey === "Choropleth: DestinyAbstractNonAbstract") {
+      const rows = data.filter((r) => asISO3(r.ReprDestCountry));
+      const abs = new Map();
+      const them = new Map();
+      rows.forEach((r) => {
+        const c = asISO3(r.ReprDestCountry);
+        if (!c) return;
+        if (fieldHasToken(r.Categories, "Abstract")) abs.set(c, (abs.get(c) || 0) + 1);
+        else them.set(c, (them.get(c) || 0) + 1);
+      });
+      const mapData = [...new Set([...abs.keys(), ...them.keys()])].map((k) => {
+        const a = abs.get(k) || 0;
+        const t = them.get(k) || 0;
+        const total = a + t;
+        const ratio = total ? (a / total) : 0;
+        return { name: k, value: Math.round(ratio * 100) };
+      });
+      const opt = buildWorldChoroplethOption(vizKey, `${caption}\nValor: % abstractos`, mapData, 100);
+      return { height: 420, needsWorldMap: true, option: opt };
+    }
+
+    if (vizKey === "Choropleth: DestinyLudemeDensity") {
+      const perCountry = new Map();
+      data.forEach((r) => {
+        const c = asISO3(r.ReprDestCountry);
+        if (!c) return;
+        const set = perCountry.get(c) || new Set();
+        listFromField(r.Mechanics).forEach((m) => set.add(m));
+        perCountry.set(c, set);
+      });
+      const mapData = [...perCountry.entries()].map(([name, set]) => ({ name, value: set.size }));
+      return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+    }
+
+    // Si aparece un choropleth nuevo, al menos no rompemos.
+    const mapData = countByISO3(filtered, "ReprDestCountry");
+    return { height: 420, needsWorldMap: true, option: buildWorldChoroplethOption(vizKey, caption, mapData) };
+  }
+
+  return null;
+}
+
+// Esta función renderiza el viz real (en lugar del placeholder).
+function showViz(vizKey) {
   clearStickyMedia();
 
   const container = document.createElement("div");
   container.style.width = "100%";
-  container.style.height = "320px";
+  container.style.height = "360px";
   stickyMediaEl.appendChild(container);
 
-  const summary = computeVizSummary(vizKey, bggData);
+  const capEl = buildCaptionElement(vizKey);
+  stickyMediaEl.appendChild(capEl);
 
-  activeEcharts = echarts.init(container);
-  activeEcharts.setOption(buildPlaceholderOption(summary));
+  const model = computeVizOption(vizKey, bggData);
+  if (!model) {
+    // Fallback: si el viz no está implementado, mostramos el placeholder anterior.
+    const summary = computeVizSummary(vizKey, bggData);
+    activeEcharts = echarts.init(container);
+    activeEcharts.setOption(buildPlaceholderOption(summary));
+    showStickyFadeIn();
+    return;
+  }
 
-  showStickyFadeIn();
+  const render = () => {
+    container.style.height = `${model.height || 360}px`;
+    activeEcharts = echarts.init(container);
+    activeEcharts.setOption(model.option, true);
+    showStickyFadeIn();
+    if (activeEcharts) activeEcharts.resize();
+  };
+
+  if (model.needsWorldMap) {
+    ensureWorldMapRegistered().then((ok) => {
+      if (!ok) {
+        const summary = computeVizSummary(vizKey, bggData);
+        activeEcharts = echarts.init(container);
+        activeEcharts.setOption(buildPlaceholderOption(summary));
+        showStickyFadeIn();
+        return;
+      }
+      render();
+    });
+    return;
+  }
+
+  render();
 }
 
 function parseStepKeys(element) {
@@ -601,7 +1323,7 @@ function renderActiveKey() {
   const current = activeKeys[activeKeyIndex];
   if (!current) return;
   if (current.type === "img") showImage(current.key);
-  if (current.type === "viz") showVizPlaceholder(current.key);
+  if (current.type === "viz") showViz(current.key);
 }
 
 function setStickyControlsVisible(visible) {
