@@ -34,7 +34,9 @@ const IMG_MAP = {
   "CV 01": { file: "img/CV_01.webp", captionLines: ["*CV*, Filip Miłuński, Gigamic, 2013", "\"Construye una vida mejor a medida que adquieres conocimientos, una carrera profesional e incluso encuentras la felicidad social\"", "(@szafa, https://boardgamegeek.com/image/1695059/)"] },
   "CV 02": { file: "img/CV_02.webp", captionLines: ["*CV*, Filip Miłuński, Gigamic, 2013", "\"Construye una vida mejor a medida que adquieres conocimientos, una carrera profesional e incluso encuentras la felicidad social\"", "(@Benterdimensional, https://boardgamegeek.com/image/5404873/)"] },
   "CV 03": { file: "img/CV_03.webp", captionLines: ["*CV*, Filip Miłuński, Gigamic, 2013", "\"Construye una vida mejor a medida que adquieres conocimientos, una carrera profesional e incluso encuentras la felicidad social\"", "(@p0w3rserj, https://boardgamegeek.com/image/3598537/)"] },
-  "Santa Maria 01": { file: "img/SantaMaria_01.webp", captionLines: ["*Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017", "\"Construye y maximiza tu colonia de poliominós en el Nuevo Mundo\"", "(@sverbeure, https://boardgamegeek.com/image/3919584/)"] },
+  "Santa Maria 01": { file: "img/SantaMaria_01.webp", captionLines: ["*Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017", "\"Construye y maximiza tu colonia de poliominós en el Nuevo Mundo\"", "(@jsper, https://boardgamegeek.com/image/5192252/)"] },
+  "Santa Maria 02": { file: "img/SantaMaria_02.webp", captionLines: ["*Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017", "\"Construye y maximiza tu colonia de poliominós en el Nuevo Mundo\"", "(@sverbeure, https://boardgamegeek.com/image/3919584/)"] },
+  "Santa Maria 03": { file: "img/SantaMaria_03.webp", captionLines: ["*Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017", "\"Construye y maximiza tu colonia de poliominós en el Nuevo Mundo\"", "(@jsper, https://boardgamegeek.com/image/5007261/)"] },
   "Azul 01": { file: "img/Azul_01.webp", captionLines: ["*Azul*, Michael Kiesling, Next Move Games, 2017", "\"Embellece artísticamente las paredes de tu palacio obteniendo los azulejos más hermosos\"", "(@EchoOperative, https://boardgamegeek.com/image/3720018/)"] },
   "Hegemony 01": { file: "img/Hegemony_01.webp", captionLines: ["*Hegemony: Lead Your Class to Victory*, Vangelis Bagiartakis y Varnavas Timotheou, Hegemonic Project Games, 2023", "\"Simula una nación contemporánea completa en este eurojuego asimétrico de corte político-económico\"", "(@Tabletopping_Games, https://boardgamegeek.com/image/6499211/)"] },
   "Heat 01": { file: "img/Heat_01.webp", captionLines: ["*Heat: Pedal to the Metal*, Asger Aleksandrov Granerud y Daniel Skjold Pedersen, Days of Wonder, 2022", "\"Lleva tu coche al límite en busca de la victoria, pero no lo sobrecalientes\"", "(@SlyMathMan, https://boardgamegeek.com/image/7600012/)"] },
@@ -66,10 +68,10 @@ const IMG_MAP = {
 // y para recordar (a simple vista) qué estamos intentando medir.
 const VIZ_SPEC_INDEX = {
   "Donut: AbstractNonAbstract": { caption: 'Aquí aparecen los juegos clasificados como \"Abstract Strategy\" en BGG, frente a los que no tienen esa etiqueta' },
-  "Histogram: TimeSeriesAbstractNonAbstract": { caption: "Proporción de juegos abstractos y no abstractos desde 1990" },
+  "StackedArea: TimeSeriesAbstractNonAbstract": { caption: "Proporción de juegos abstractos y no abstractos desde 1990" },
   "Donut: ThemedAbstractPureAbstract": { caption: "Juegos abstractos con tema y sin tema" },
-  "Histogram: TimeSeriesThemedAbstractPureAbstract": { caption: "Juegos abstractos con tema y sin tema, desde 1990" },
-  "Stellar: AbstractThemes": { caption: "Temas que aparecen en juegos abstractos (placeholder)" },
+  "StackedArea: TimeSeriesThemedAbstractPureAbstract": { caption: "Juegos abstractos con tema y sin tema, desde 1990" },
+  "HorBar: AbstractThemes": { caption: "Los temas representados en juegos abstractos" },
   "WorldMapGraph: OriginDestinyNetwork": { caption: "Mapa que muestra origen de publicación y país representado" },
   "Choropleth: Destiny: SliderAges": { caption: "Países representados por épocas históricas" },
   "Choropleth: Destiny: SliderDecades": { caption: "Países representados por décadas del siglo XX" },
@@ -86,12 +88,10 @@ const VIZ_SPEC_INDEX = {
   "Choropleth: CategoriesWargamePolitical": { caption: "Países representados en wargames clasificados como políticos" },
   "TimeStackedArea: WargamesPoliticalTime": { caption: "Wargames vs wargames políticos (tiempo)" },
   "WorldMapGraph: OriginDestinyNetworkFilterColonial": { caption: "Origen/destino en juegos con Theme: Colonial" },
-  "NetworkGraph: MechanicsFilterColonial": { caption: "Red de mecánicas en juegos coloniales" },
-  "TimeSeries: ThemeEnvironmentalProtection": { caption: "Juegos sobre degradación ambiental a lo largo del tiempo" },
-  "Donut: ColonialIntersectPolitical": { caption: "Intersección: colonial vs político" },
-  "NetworkGraph: FilterEducationalMechanicsCoocurrence": { caption: "Red de mecánicas en juegos educativos" },
-  "NetworkGraph: FilterEducationalCategoriesCoocurrence": { caption: "Red de categorías asociadas a juegos educativos" },
-  "TimeSeriesArea: TimeSeriesFarmingVsNonFarming": { caption: "Todos vs Farming a lo largo del tiempo" },
+  "Alluvial: CatsThemesFilterColonial": { caption: "Temas y mecánicas que aparecen en juegos \"coloniales\"" },
+  "TimeSeries: ThemeEnvironmentalProtection": { caption: "Publicación a lo largo del tiempo de juegos de mesa que abordan el problema de la degradación ambiental" },
+  "Donut: ColonialIntersectPolitical": { caption: "La representación de lo colonial en un juego de mesa no significa una adhesión u oposición política, ni sugiere de antemano que sus ludemas estén organizados para promover un mensaje explícito" },
+  "TimeSeriesArea: TimeSeriesFarmingVsNonFarming": { caption: "Los juegos de mesa europeos han cargado durante años con el estereotipo de tener la agricultura como tema predominante" },
 };
 
 // Esta función hace una búsqueda “amable” en campos que vienen como lista separada por comas.
@@ -112,10 +112,28 @@ function isValidCountryCode(code) {
 }
 
 // Para mapas: en GitHub Pages conviene cargar recursos por URL absoluta.
-// Usamos un GeoJSON donde cada país tiene ISO_A3 (ISO-3) para casar con nuestro dataset.
+// GeoJSON (datasets/geo-countries): ISO-3 en "ISO3166-1-Alpha-3"; nombre en "name".
 const WORLD_GEOJSON_URL = "https://cdn.jsdelivr.net/gh/datasets/geo-countries@master/data/countries.geojson";
 const WORLD_MAP_KEY = "worldIso3";
 let worldMapReady = null;
+/** @type {Record<string, string>} ISO-3 → nombre legible para tooltips */
+let iso3ToLabel = {};
+
+function geoFeatureIso3(props) {
+  if (!props) return "";
+  return (
+    props["ISO3166-1-Alpha-3"] ||
+    props.ISO_A3 ||
+    props.ISO3 ||
+    props.iso_a3 ||
+    ""
+  ).trim();
+}
+
+function countryLabel(iso3) {
+  const code = (iso3 || "").trim();
+  return iso3ToLabel[code] || code;
+}
 
 function ensureWorldMapRegistered() {
   if (worldMapReady) return worldMapReady;
@@ -126,13 +144,15 @@ function ensureWorldMapRegistered() {
       return r.json();
     })
     .then((geojson) => {
-      // ECharts empareja por “name”. Ajustamos para que “name” sea ISO-3.
+      iso3ToLabel = {};
+      // ECharts empareja regiones del mapa por properties.name; lo fijamos a ISO-3.
       (geojson.features || []).forEach((f) => {
-        const iso3 = f?.properties?.ISO_A3 || f?.properties?.ISO3 || f?.properties?.iso_a3;
-        if (iso3) {
-          f.properties = f.properties || {};
-          f.properties.name = iso3;
-        }
+        const props = f.properties || {};
+        const iso3 = geoFeatureIso3(props);
+        if (!iso3) return;
+        const label = (props.name || props.ADMIN || props.NAME || iso3).trim();
+        iso3ToLabel[iso3] = label;
+        props.name = iso3;
       });
       echarts.registerMap(WORLD_MAP_KEY, geojson);
       return true;
@@ -457,15 +477,30 @@ function computeVizSummary(vizKey, data) {
     };
   }
 
-  if (vizKey === "NetworkGraph: MechanicsFilterColonial") {
+  if (vizKey === "Alluvial: CatsThemesFilterColonial") {
     const filtered = data.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"));
-    const counts = new Map();
+    return {
+      title: vizKey,
+      rows,
+      subtitle: `Theme: Colonial (filtrados: ${filtered.length})`,
+      groups: [{ name: "Juegos coloniales", value: filtered.length }],
+    };
+  }
+
+  if (vizKey === "HorBar: AbstractThemes") {
+    const filtered = data.filter((r) => fieldHasToken(r.Categories, "Abstract Strategy"));
+    const themeCount = new Set();
     filtered.forEach((r) => {
-      const mechs = (r.Mechanics || "").split(",").map((s) => s.trim()).filter(Boolean);
-      mechs.forEach((m) => counts.set(m, (counts.get(m) || 0) + 1));
+      listFromField(r.Families)
+        .filter((f) => f.startsWith("Theme:"))
+        .forEach((t) => themeCount.add(t));
     });
-    const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7);
-    return { title: vizKey, rows, subtitle: `Theme: Colonial (filtrados: ${filtered.length})`, groups: top.map(([name, value]) => ({ name, value })) };
+    return {
+      title: vizKey,
+      rows,
+      subtitle: `Abstract Strategy (filtrados: ${filtered.length})`,
+      groups: [{ name: "Temas distintos", value: themeCount.size }],
+    };
   }
 
   if (vizKey === "TimeSeries: ThemeEnvironmentalProtection") {
@@ -543,18 +578,6 @@ function computeVizSummary(vizKey, data) {
     };
   }
 
-  // Stellar: AbstractThemes no tiene una lógica definida todavía en VizRef,
-  // así que por ahora mostramos un marcador con el total de filas.
-  if (vizKey === "Stellar: AbstractThemes") {
-    const abstractOnly = data.filter((r) => fieldHasToken(r.Categories, "Abstract Strategy"));
-    return {
-      title: vizKey,
-      rows,
-      subtitle: `Abstract Strategy (filtrados: ${abstractOnly.length})`,
-      groups: [{ name: "Juegos abstractos", value: abstractOnly.length }],
-    };
-  }
-
   return { title: vizKey, rows, groups: [{ name: "Filas cargadas", value: rows }] };
 }
 
@@ -570,6 +593,7 @@ function clearStickyMedia() {
     activeEcharts = null;
   }
   stickyMediaEl.classList.remove("is-visible");
+  stickyMediaEl.style.overflowX = "";
   stickyMediaEl.innerHTML = "";
 }
 
@@ -752,6 +776,144 @@ function buildBarTimeOption(title, caption, years, series) {
   };
 }
 
+function buildStackedAreaOption(title, caption, years, seriesDefs) {
+  const series = seriesDefs.map((s) => ({
+    ...s,
+    type: "line",
+    stack: "total",
+    areaStyle: { opacity: 0.85 },
+    smooth: true,
+    symbolSize: 2,
+  }));
+  return buildBarTimeOption(title, caption, years, series);
+}
+
+function topNTokens(counts, n, filterFn = () => true) {
+  return [...counts.entries()]
+    .filter(([name]) => filterFn(name))
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, n)
+    .map(([name]) => name);
+}
+
+function computeColonialAlluvial(rows) {
+  const filtered = rows.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"));
+  const catCounts = new Map();
+  const themeCounts = new Map();
+  const mechCounts = new Map();
+  const linkCT = new Map();
+  const linkTM = new Map();
+
+  filtered.forEach((r) => {
+    const cats = listFromField(r.Categories).filter((c) => c !== "Card Game");
+    const themes = listFromField(r.Families).filter(
+      (f) => f.startsWith("Theme:") && !fieldHasToken(f, "Theme: Colonial")
+    );
+    const mechs = listFromField(r.Mechanics);
+
+    cats.forEach((c) => catCounts.set(c, (catCounts.get(c) || 0) + 1));
+    themes.forEach((t) => themeCounts.set(t, (themeCounts.get(t) || 0) + 1));
+    mechs.forEach((m) => mechCounts.set(m, (mechCounts.get(m) || 0) + 1));
+
+    cats.forEach((c) => {
+      themes.forEach((t) => {
+        const k = `${c}\0${t}`;
+        linkCT.set(k, (linkCT.get(k) || 0) + 1);
+      });
+    });
+    themes.forEach((t) => {
+      mechs.forEach((m) => {
+        const k = `${t}\0${m}`;
+        linkTM.set(k, (linkTM.get(k) || 0) + 1);
+      });
+    });
+  });
+
+  const topCats = topNTokens(catCounts, 10);
+  const topThemes = topNTokens(themeCounts, 10, (t) => !fieldHasToken(t, "Theme: Colonial"));
+  const topMechs = topNTokens(mechCounts, 10);
+  const catSet = new Set(topCats);
+  const themeSet = new Set(topThemes);
+  const mechSet = new Set(topMechs);
+
+  const nodeIndex = new Map();
+  const nodes = [];
+  const addNode = (name, depth) => {
+    const key = `${depth}:${name}`;
+    if (nodeIndex.has(key)) return nodeIndex.get(key);
+    const idx = nodes.length;
+    nodeIndex.set(key, idx);
+    nodes.push({ name, depth });
+    return idx;
+  };
+
+  topCats.forEach((c) => addNode(c, 0));
+  topThemes.forEach((t) => addNode(t, 1));
+  topMechs.forEach((m) => addNode(m, 2));
+
+  const links = [];
+  linkCT.forEach((value, k) => {
+    const [c, t] = k.split("\0");
+    if (!catSet.has(c) || !themeSet.has(t)) return;
+    links.push({ source: `0:${c}`, target: `1:${t}`, value });
+  });
+  linkTM.forEach((value, k) => {
+    const [t, m] = k.split("\0");
+    if (!themeSet.has(t) || !mechSet.has(m)) return;
+    links.push({ source: `1:${t}`, target: `2:${m}`, value });
+  });
+
+  return {
+    nodes: nodes.map((n) => ({ name: `${n.depth}:${n.name}`, label: n.name, depth: n.depth })),
+    links,
+  };
+}
+
+function buildAlluvialOption(title, caption, sankeyData) {
+  const { nodes, links } = sankeyData;
+  const depthColors = ["#3b6b88", "#4a7a61", "#d19e2b"];
+  return {
+    backgroundColor: "transparent",
+    title: {
+      text: title,
+      subtext: caption || "",
+      left: "center",
+      top: 6,
+      textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
+      subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
+    },
+    tooltip: { trigger: "item", triggerOn: "mousemove" },
+    series: [
+      {
+        type: "sankey",
+        layout: "none",
+        orient: "horizontal",
+        left: 24,
+        right: 24,
+        top: 72,
+        bottom: 16,
+        nodeWidth: 14,
+        nodeGap: 10,
+        draggable: false,
+        emphasis: { focus: "adjacency" },
+        lineStyle: { color: "gradient", curveness: 0.5, opacity: 0.35 },
+        data: nodes.map((n) => ({
+          name: n.name,
+          label: n.label,
+          itemStyle: { color: depthColors[n.depth] || "#888" },
+        })),
+        links,
+        label: {
+          color: "#222",
+          fontSize: 10,
+          formatter: (p) => (p.data.label != null ? p.data.label : String(p.name).replace(/^\d+:/, "")),
+        },
+      },
+    ],
+    animationDuration: 400,
+  };
+}
+
 function buildWorldChoroplethOption(title, caption, data, visualMax) {
   const maxVal = visualMax || Math.max(1, ...data.map((d) => d.value || 0));
   return {
@@ -764,7 +926,14 @@ function buildWorldChoroplethOption(title, caption, data, visualMax) {
       textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
       subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
     },
-    tooltip: { trigger: "item", formatter: (p) => `${p.name}: ${p.value || 0}` },
+    tooltip: {
+      trigger: "item",
+      formatter: (p) => {
+        const label = countryLabel(p.name);
+        const val = p.value;
+        return `${label}: ${val != null && val !== "" ? val : 0}`;
+      },
+    },
     visualMap: {
       min: 0,
       max: maxVal,
@@ -790,6 +959,23 @@ function buildWorldChoroplethOption(title, caption, data, visualMax) {
   };
 }
 
+function formatMapNetworkTooltip(params) {
+  if (!params) return "";
+  if (params.seriesType === "lines") {
+    const d = params.data || {};
+    const count = d.value ?? 0;
+    const from = countryLabel(d.originCode);
+    const to = countryLabel(d.destCode);
+    return `${from} → ${to}: ${count}`;
+  }
+  if (params.seriesType === "scatter") {
+    const d = params.data || {};
+    const count = (d.value && d.value[2]) ?? 0;
+    return `${countryLabel(d.countryCode)}: ${count}`;
+  }
+  return "";
+}
+
 function buildWorldNetworkOption(title, caption, links, originPoints, destPoints) {
   return {
     backgroundColor: "transparent",
@@ -801,7 +987,7 @@ function buildWorldNetworkOption(title, caption, links, originPoints, destPoints
       textStyle: { fontSize: 12, fontWeight: 700, color: "#1a1a1a" },
       subtextStyle: { fontSize: 11, color: "#444", lineHeight: 16 },
     },
-    tooltip: { trigger: "item" },
+    tooltip: { trigger: "item", formatter: formatMapNetworkTooltip },
     geo: {
       map: WORLD_MAP_KEY,
       roam: true,
@@ -873,9 +1059,6 @@ function buildForceGraphOption(title, caption, nodes, edges) {
 function computeVizOption(vizKey, data) {
   const caption = VIZ_SPEC_INDEX[vizKey]?.caption || "";
 
-  // Ignorado por ahora: no existe en VizRef.md.
-  if (vizKey === "Stellar: AbstractThemes") return null;
-
   if (vizKey === "Donut: AbstractNonAbstract") {
     const abstract = data.filter((r) => fieldHasToken(r.Categories, "Abstract Strategy")).length;
     const groups = [
@@ -915,7 +1098,7 @@ function computeVizOption(vizKey, data) {
     return { height: 340, option: buildDonutOption(vizKey, caption, "Intersección", groups) };
   }
 
-  if (vizKey === "Histogram: TimeSeriesAbstractNonAbstract") {
+  if (vizKey === "StackedArea: TimeSeriesAbstractNonAbstract" || vizKey === "Histogram: TimeSeriesAbstractNonAbstract") {
     const filtered = data.filter((r) => (toYear(r) ?? 0) >= 1990);
     const s = computeTwoYearSeries(
       filtered,
@@ -923,14 +1106,14 @@ function computeVizOption(vizKey, data) {
       (r) => !fieldHasToken(r.Categories, "Abstract Strategy"),
       1990
     );
-    const option = buildBarTimeOption(vizKey, caption, s.years, [
-      { name: "Abstractos", type: "bar", data: s.a, itemStyle: { color: "#4a7a61" } },
-      { name: "No abstractos", type: "bar", data: s.b, itemStyle: { color: "#3b6b88" } },
+    const option = buildStackedAreaOption(vizKey, caption, s.years, [
+      { name: "Abstractos", data: s.a, lineStyle: { color: "#4a7a61" }, itemStyle: { color: "#4a7a61" } },
+      { name: "No abstractos", data: s.b, lineStyle: { color: "#3b6b88" }, itemStyle: { color: "#3b6b88" } },
     ]);
     return { height: 360, option };
   }
 
-  if (vizKey === "Histogram: TimeSeriesThemedAbstractPureAbstract") {
+  if (vizKey === "StackedArea: TimeSeriesThemedAbstractPureAbstract" || vizKey === "Histogram: TimeSeriesThemedAbstractPureAbstract") {
     const filtered = data.filter((r) => (toYear(r) ?? 0) >= 1990 && fieldHasToken(r.Categories, "Abstract Strategy"));
     const s = computeTwoYearSeries(
       filtered,
@@ -938,11 +1121,36 @@ function computeVizOption(vizKey, data) {
       (r) => !fieldHasToken(r.Families, "Theme:"),
       1990
     );
-    const option = buildBarTimeOption(vizKey, caption, s.years, [
-      { name: "Con tema", type: "bar", data: s.a, itemStyle: { color: "#d19e2b" } },
-      { name: "Puros", type: "bar", data: s.b, itemStyle: { color: "#7a4b75" } },
+    const option = buildStackedAreaOption(vizKey, caption, s.years, [
+      { name: "Con tema", data: s.a, lineStyle: { color: "#d19e2b" }, itemStyle: { color: "#d19e2b" } },
+      { name: "Puros", data: s.b, lineStyle: { color: "#7a4b75" }, itemStyle: { color: "#7a4b75" } },
     ]);
     return { height: 360, option };
+  }
+
+  if (vizKey === "HorBar: AbstractThemes") {
+    const filtered = data.filter((r) => fieldHasToken(r.Categories, "Abstract Strategy"));
+    const counts = new Map();
+    filtered.forEach((r) => {
+      listFromField(r.Families)
+        .filter((f) => f.startsWith("Theme:"))
+        .forEach((t) => counts.set(t, (counts.get(t) || 0) + 1));
+    });
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 24);
+    const names = top.map((x) => x[0]);
+    const values = top.map((x) => x[1]);
+    const option = {
+      backgroundColor: "transparent",
+      title: { text: vizKey, subtext: caption, left: "center", top: 6, textStyle: { fontSize: 12, fontWeight: 700 }, subtextStyle: { fontSize: 11, color: "#444" } },
+      tooltip: { trigger: "axis" },
+      grid: { left: 10, right: 10, top: 84, bottom: 22, containLabel: true },
+      xAxis: { type: "value", axisLabel: { color: "#444" }, splitLine: { lineStyle: { color: "rgba(0,0,0,0.08)" } } },
+      yAxis: { type: "category", data: names, axisLabel: { color: "#444", width: 200, overflow: "truncate" } },
+      dataZoom: [{ type: "inside" }, { type: "slider", yAxisIndex: 0, right: 2, width: 10 }],
+      series: [{ type: "bar", data: values, itemStyle: { color: "#4a7a61" }, label: { show: true, position: "right", color: "#222" } }],
+      animationDuration: 400,
+    };
+    return { height: 420, option };
   }
 
   if (vizKey === "HorBar: MostCommonWars") {
@@ -1060,22 +1268,10 @@ function computeVizOption(vizKey, data) {
     return { height: 360, option };
   }
 
-  if (vizKey === "NetworkGraph: MechanicsFilterColonial") {
-    const filtered = data.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"));
-    const g = computeCooccurrenceGraph(filtered, "Mechanics", { maxNodes: 26 });
-    return { height: 420, option: buildForceGraphOption(vizKey, caption, g.nodes, g.edges) };
-  }
-
-  if (vizKey === "NetworkGraph: FilterEducationalMechanicsCoocurrence") {
-    const filtered = data.filter((r) => fieldHasToken(r.Categories, "Educational"));
-    const g = computeCooccurrenceGraph(filtered, "Mechanics", { maxNodes: 26 });
-    return { height: 420, option: buildForceGraphOption(vizKey, caption, g.nodes, g.edges) };
-  }
-
-  if (vizKey === "NetworkGraph: FilterEducationalCategoriesCoocurrence") {
-    const filtered = data.filter((r) => fieldHasToken(r.Categories, "Educational"));
-    const g = computeCooccurrenceGraph(filtered, "Categories", { excludeToken: "Educational", maxNodes: 26 });
-    return { height: 420, option: buildForceGraphOption(vizKey, caption, g.nodes, g.edges) };
+  if (vizKey === "Alluvial: CatsThemesFilterColonial") {
+    const sankeyData = computeColonialAlluvial(data);
+    const option = buildAlluvialOption(vizKey, caption, sankeyData);
+    return { height: 440, option, wide: true };
   }
 
   if (vizKey === "WorldMapGraph: OriginDestinyNetwork" || vizKey === "WorldMapGraph: OriginDestinyNetworkFilterColonial") {
@@ -1083,9 +1279,9 @@ function computeVizOption(vizKey, data) {
       ? data.filter((r) => fieldHasToken(r.Families, "Theme: Colonial"))
       : data;
 
-    const links = [];
-    const originAgg = new Map();
-    const destAgg = new Map();
+    const pairLinks = new Map();
+    const originByCountry = new Map();
+    const destByCountry = new Map();
 
     filtered.forEach((r) => {
       const o = asISO3(r.PubOriginCountry);
@@ -1099,25 +1295,52 @@ function computeVizOption(vizKey, data) {
       if (olon == null || olat == null || dlon0 == null || dlat == null) return;
 
       const dlon = dlon0 + 3; // pequeño empuje a la derecha para evitar solapamiento
-      links.push({ coords: [[olon, olat], [dlon, dlat]] });
+      const pairKey = `${o}|${d}`;
+      if (!pairLinks.has(pairKey)) {
+        pairLinks.set(pairKey, {
+          originCode: o,
+          destCode: d,
+          count: 0,
+          coords: [
+            [olon, olat],
+            [dlon, dlat],
+          ],
+        });
+      }
+      pairLinks.get(pairKey).count += 1;
 
-      const ok = `${olon},${olat}`;
-      originAgg.set(ok, (originAgg.get(ok) || 0) + 1);
-      const dk = `${dlon},${dlat}`;
-      destAgg.set(dk, (destAgg.get(dk) || 0) + 1);
+      if (!originByCountry.has(o)) {
+        originByCountry.set(o, { countryCode: o, lon: olon, lat: olat, count: 0 });
+      }
+      originByCountry.get(o).count += 1;
+
+      if (!destByCountry.has(d)) {
+        destByCountry.set(d, { countryCode: d, lon: dlon, lat: dlat, count: 0 });
+      }
+      destByCountry.get(d).count += 1;
     });
 
-    const originPoints = [...originAgg.entries()].map(([k, value]) => {
-      const [lon, lat] = k.split(",").map(Number);
-      return { name: "Origen", value: [lon, lat, value] };
-    });
+    const links = [...pairLinks.values()]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 900)
+      .map((e) => ({
+        coords: e.coords,
+        value: e.count,
+        originCode: e.originCode,
+        destCode: e.destCode,
+      }));
 
-    const destPoints = [...destAgg.entries()].map(([k, value]) => {
-      const [lon, lat] = k.split(",").map(Number);
-      return { name: "Destino", value: [lon, lat, value] };
-    });
+    const originPoints = [...originByCountry.values()].map((e) => ({
+      countryCode: e.countryCode,
+      value: [e.lon, e.lat, e.count],
+    }));
 
-    return { height: 420, needsWorldMap: true, option: buildWorldNetworkOption(vizKey, caption, links.slice(0, 900), originPoints, destPoints) };
+    const destPoints = [...destByCountry.values()].map((e) => ({
+      countryCode: e.countryCode,
+      value: [e.lon, e.lat, e.count],
+    }));
+
+    return { height: 420, needsWorldMap: true, option: buildWorldNetworkOption(vizKey, caption, links, originPoints, destPoints) };
   }
 
   if (vizKey.startsWith("Choropleth:")) {
@@ -1263,6 +1486,10 @@ function showViz(vizKey) {
 
   const render = () => {
     container.style.height = `${model.height || 360}px`;
+    if (model.wide) {
+      container.style.minWidth = "780px";
+      stickyMediaEl.style.overflowX = "auto";
+    }
     activeEcharts = echarts.init(container);
     activeEcharts.setOption(model.option, true);
     showStickyFadeIn();

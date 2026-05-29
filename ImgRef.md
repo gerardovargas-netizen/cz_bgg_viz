@@ -84,7 +84,21 @@ Respect the cursives.
 	- Caption:
 		- *Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017
 		- "Construye y maximiza tu colonia de poliominós en el Nuevo Mundo"
+		- (@jsper, https://boardgamegeek.com/image/5192252/)
+
+ - {Img: Santa Maria 02}
+	- File: /img/SantaMaria_02.webp
+	- Caption:
+		- *Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017
+		- "Construye y maximiza tu colonia de poliominós en el Nuevo Mundo"
 		- (@sverbeure, https://boardgamegeek.com/image/3919584/)
+
+ - {Img: Santa Maria 03}
+	- File: /img/SantaMaria_03.webp
+	- Caption:
+		- *Santa Maria*, Kristian Amundsen Østby y Eilif Svensson, Aporta Games, 2017
+		- "Construye y maximiza tu colonia de poliominós en el Nuevo Mundo"
+		- (@jsper, https://boardgamegeek.com/image/5007261/)
 
 - {Img: Azul 01}
 	- File: /img/Azul_01.webp

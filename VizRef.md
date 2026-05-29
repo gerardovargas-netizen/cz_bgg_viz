@@ -187,7 +187,7 @@ All the visualizations use the BGG_FullExtras_Final_V3.csv dataset. This is the 
 	- Labels: 
 	- Caption: Aquí aparecen los juegos clasificados como "Abstract Strategy" en BGG, frente a los que no tienen esa etiqueta
 
-- {{Viz: Histogram: TimeSeriesAbstractNonAbstract}}
+- {{Viz: StackedArea: TimeSeriesAbstractNonAbstract}}
 	- Chart Type: Time series stacked area chart
 	- Data Processing Logic:
 		- Use columns "Yearpublished" and "Categories"
@@ -211,7 +211,7 @@ All the visualizations use the BGG_FullExtras_Final_V3.csv dataset. This is the 
 		- Legend: 
 	- Caption: Juegos abstractos con tema y sin tema
 
-- {{Viz: Histogram: TimeSeriesThemedAbstractPureAbstract}}
+- {{Viz: StackedArea: TimeSeriesThemedAbstractPureAbstract}}
 	- Chart Type: Time series, stacked area chart
 	- Data Processing Logic:
 		- Use columns "Yearpublished" and "Categories" and "Families"
@@ -225,6 +225,15 @@ All the visualizations use the BGG_FullExtras_Final_V3.csv dataset. This is the 
 			- Abstractos con tema
 			- Abstractos puros
 	- Caption: Juegos abstractos con tema y sin tema, desde 1990
+
+- {{Viz: HorBar: AbstractThemes}}
+	- Chart Type: Horizontal bars
+	- Data Processing Logic:
+		- Use columns "Categories" and "Families"
+		- Filter "Categories", when contains "Abstract Strategy"
+		- Count from column "Families", only values where text begins with "Theme:"
+	- Display: Horizontal bars, starting from biggest, of "Theme:" values
+	- Caption: Los temas representados en juegos abstractos
 
 - {{Viz: WorldMapGraph: OriginDestinyNetwork}}
 	- Chart Type: World map network chart
@@ -320,6 +329,7 @@ All the visualizations use the BGG_FullExtras_Final_V3.csv dataset. This is the 
 			- Horizontal bars for each value
 			- The chart is vertically scrollable to be able to see every value (chart canvas height should be around 7 bars)
 			- Horizontal canvas size should be able to fit the longes horizontal bar
+			- Start from largest count at the top
 	- Caption: Las guerras más representadas en los wargames
 
 - {{Viz: Choropleth: CountryTargetWargame}}
@@ -446,14 +456,22 @@ All the visualizations use the BGG_FullExtras_Final_V3.csv dataset. This is the 
 			- Destiny points color with caption: "País representado"
 	- Caption:  Mapa que muestra el origen de publicación y el país representado de todos los juegos de mesa de temática colonial
 
-- {{Viz: NetworkGraph: MechanicsFilterColonial}}
-	- Chart Type: Network Graph
+- {{Viz: Alluvial: CatsThemesFilterColonial}}
+	- Chart Type: Alluvial Driagram
 	- Data Processing Logic:
-		- Filter column "Families", contains "Theme: Colonial"
-		- Co-ocurrence network of column "Mechanics"
+		- First, filter column "Families", contains "Theme: Colonial"
+		- Then, count and keep top ten values out of the columns:
+			- "Categories", exclude "Card Game"
+			- "Families", only values that begin with the text "Theme:", and exclude "Theme:Colonial"
+			- "Mechanics"
 		- Display:
-			- Node size is quantity of items
-	- Caption: Red de ludemas que aparecen en juegos de temática colonial
+			- Alluvial driagram
+			- Steps:
+				- "Categories"
+				- "Families"
+				- "Mechanics"
+			- Horizontal bar to scroll, don't fill all the diagram within the canvas
+	- Caption: Temas y mecánicas que aparecen en juegos "coloniales"
 
 - {{Viz: TimeSeries: ThemeEnvironmentalProtection}}
 	- Chart Type: Time series
@@ -475,24 +493,6 @@ All the visualizations use the BGG_FullExtras_Final_V3.csv dataset. This is the 
 			- Group one, "Juegos de temática colonial que no están clasificados como políticos"
 	- Caption: 
 		- La representación de lo colonial en un juego de mesa no significa una adhesión u oposición política, ni sugiere de antemano que sus ludemas estén organizados para promover un mensaje explícito
-
-- {{Viz: NetworkGraph: FilterEducationalMechanicsCoocurrence}}
-	- Chart Type: Network Graph
-	- Data Processing Logic: 
-		- Filter when column "Categories" contains "Educational
-		- Co-ocurrence network of column "Mechanics"
-		- Display: 
-			- Node size is quantity of items
-	- Caption: Red de ludemas que aparecen en juegos "educativos"
-
-- {{Viz: NetworkGraph: FilterEducationalMechanicsCoocurrence}}
-	- Chart Type: Network Graph
-	- Data Processing Logic: 
-		- Filter when column "Categories" contains "Educational
-		- Co-ocurrence network of column "Categories", excluding "Educational"
-		- Display: 
-			- Node size is quantity of items
-	- Caption: Red de categorías asociadas a juegos "educativos"
 
 - {{Viz: TimeSeriesArea: TimeSeriesFarmingVsNonFarming}}
 	- Chart Type: Time Series Stacked Area
